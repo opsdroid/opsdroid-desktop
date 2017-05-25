@@ -12,12 +12,12 @@
   "license": "",
   "devDependencies": {
     "electron": "~1.6.2",
-    "electron-connect": "^0.6.1",
     "gulp": "^3.9.1",
     "gulp-sass": "^3.1.0",
     "gulp-shell": "^0.6.3"
   },
   "dependencies": {
+    "electron-connect": "^0.6.1",
     "request": "^2.81.0",
     "websocket": "^1.0.24"
   }
