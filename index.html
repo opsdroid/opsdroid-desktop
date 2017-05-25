@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Opsdroid Desktop</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <img class="banner" src="./assets/banners/banner-eye-transparent.png" />
+    <ul id="conversation">
+    </ul>
+    <div id="prompt">
+      <input type="text" id="input" />
+      <input type="submit" id="send" value="Send" />
+      <span id="status-indicator">
+        <span id="status-indicator-tooltip">disconnected</span>
+      </span>
+    </div>
+  </body>
+
+  <script>
+    require('electron-connect').client.create()
+    require('./index.js')
+  </script>
+</html>

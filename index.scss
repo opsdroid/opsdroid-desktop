@@ -1,0 +1,169 @@
+$prompt-height: 40px;
+$send-width: 60px;
+$status-indicator-size: 8px;
+
+// Colours
+$opsdroid-grey: #ebebeb;
+$opsdroid-grey-dark: darken($opsdroid-grey, 30%);
+$opsdroid-blue: #176587;
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+
+  font-size: 12px;
+  font-family: sans-serif;
+
+  img.banner {
+    position: fixed;
+    bottom: 0px;
+    left: -400px;
+    filter: brightness(50%);
+  }
+
+  ul#conversation {
+    // width: 100%;
+    padding: 0;
+    list-style-type: none;
+    margin-bottom: $prompt-height;
+    text-align: center;
+
+    li {
+      padding: 10px;
+      max-width: 60%;
+      border-radius: 10px;
+      display:block;
+    }
+
+    li.clearfix {
+      width: 100%;
+      height: 5px;
+      padding: 0;
+      content: '';
+      display: block;
+      clear: both;
+    }
+
+    li.user {
+      float: right;
+      background-color: $opsdroid-blue;
+      color: white;
+      border-bottom-right-radius: 0px;
+    }
+
+    li.bot {
+      float: left;
+      background-color: $opsdroid-grey;
+      color: black;
+      border-bottom-left-radius: 0px;
+    }
+
+    li.info {
+      min-width: 100px;
+      margin: 0 auto;
+      display: inline-block;
+      padding: 1px;
+      text-align: center;
+      background-color: $opsdroid-grey;
+      color: $opsdroid-grey-dark;
+    }
+
+    li.time {
+      background-color: transparent;
+      font-size: 0.8em;
+      color: $opsdroid-grey-dark;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  #prompt {
+
+    #input {
+      position: fixed;
+      left: 0px;
+      bottom: 0px;
+
+      height: $prompt-height;
+      width: 100%;
+      padding: 0;
+      padding-left: 10px;
+      margin: 0;
+
+      border: 0;
+      border-radius: 0;
+      outline: none;
+
+      background-color: $opsdroid-grey;
+    }
+
+    #send {
+      cursor: pointer;
+      border: 0;
+      position: fixed;
+      bottom: 0px;
+      right: 0px;
+      height: $prompt-height;
+      width: 60px;
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    #status-indicator {
+      content: '';
+      position: fixed;
+      border: 1px solid $opsdroid-grey-dark;
+      border-radius: $status-indicator-size;
+      height: $status-indicator-size;
+      width: $status-indicator-size;
+      background-color: $opsdroid-grey;
+      bottom: ($prompt-height / 2) - ($status-indicator-size / 2);
+      right: $send-width + ($status-indicator-size * 2);
+
+      #status-indicator-tooltip {
+          visibility: hidden;
+          // width: 120px;
+          background-color: black;
+          color: #fff;
+          text-align: center;
+          padding: 5px 10px;
+          border-radius: 6px;
+
+          /* Position the tooltip text - see examples below! */
+          position: absolute;
+          z-index: 1;
+          top: -5px - ($status-indicator-size / 2);
+          right: 120%;
+      }
+
+      #status-indicator-tooltip.active {
+        visibility: visible;
+      }
+
+      #status-indicator-tooltip::after {
+        content: " ";
+        position: absolute;
+        top: 50%;
+        left: 100%; /* To the right of the tooltip */
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent transparent black;
+      }
+    }
+
+    #status-indicator:hover {
+      #status-indicator-tooltip {
+        visibility: visible;
+      }
+    }
+
+    #status-indicator.active {
+      background-color: $opsdroid-grey-dark;
+    }
+  }
+
+}
