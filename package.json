@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "electron-connect": "^0.6.1",
+    "electron-settings": "^3.0.14",
     "request": "^2.81.0",
     "websocket": "^1.0.24"
   }

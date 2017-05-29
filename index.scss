@@ -4,17 +4,46 @@ $status-indicator-size: 8px;
 
 // Colours
 $opsdroid-grey: #ebebeb;
+$opsdroid-grey-medium: darken($opsdroid-grey, 10%);
 $opsdroid-grey-dark: darken($opsdroid-grey, 30%);
+$opsdroid-grey-light: lighten($opsdroid-grey, 2%);
 $opsdroid-blue: #176587;
 
 ::-webkit-scrollbar {
     display: none;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
 
   font-size: 12px;
   font-family: sans-serif;
+
+  input[type=text] {
+    height: $prompt-height;
+    padding: 0;
+    padding-left: 10px;
+    margin: 0;
+
+    border: 0;
+    border-radius: 0;
+    outline: none;
+
+    background-color: $opsdroid-grey;
+  }
+
+  input[type=submit] {
+    cursor: pointer;
+    border: 0;
+    height: $prompt-height;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    background-color: $opsdroid-grey-medium;
+  }
 
   img.banner {
     position: fixed;
@@ -66,7 +95,7 @@ body {
       display: inline-block;
       padding: 1px;
       text-align: center;
-      background-color: $opsdroid-grey;
+      background-color: $opsdroid-grey-light;
       color: $opsdroid-grey-dark;
     }
 
@@ -79,42 +108,59 @@ body {
     }
   }
 
+  #connection-settings {
+    display: none;
+    position: fixed;
+    width: 100%;
+    left: 0px;
+    bottom: $prompt-height;
+    background-color: $opsdroid-grey-medium;
+    border-bottom: 1px solid $opsdroid-grey;
+
+    input[type=text] {
+      border-right: 2px solid $opsdroid-grey;
+      background-color: $opsdroid-grey-dark;
+      width: 40%;
+    }
+
+    input[type=text]::-webkit-input-placeholder {
+      color: $opsdroid-grey-medium;
+    }
+
+    input[type=submit] {
+      float: right;
+      width: 20%;
+    }
+  }
+
+  #connection-settings.active {
+    display: block;
+  }
+
   #prompt {
 
     #input {
       position: fixed;
       left: 0px;
       bottom: 0px;
-
-      height: $prompt-height;
       width: 100%;
-      padding: 0;
-      padding-left: 10px;
-      margin: 0;
+    }
 
-      border: 0;
-      border-radius: 0;
-      outline: none;
-
-      background-color: $opsdroid-grey;
+    #input::-webkit-input-placeholder {
+      color: $opsdroid-grey-dark;
     }
 
     #send {
-      cursor: pointer;
-      border: 0;
       position: fixed;
       bottom: 0px;
       right: 0px;
-      height: $prompt-height;
       width: 60px;
-      border-radius: 0;
-      padding: 0;
-      margin: 0;
     }
 
     #status-indicator {
       content: '';
       position: fixed;
+      cursor: pointer;
       border: 1px solid $opsdroid-grey-dark;
       border-radius: $status-indicator-size;
       height: $status-indicator-size;

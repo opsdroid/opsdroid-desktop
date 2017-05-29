@@ -1,14 +1,17 @@
 //////
 // Imports
-var WebSocketClient = require('websocket').client;
 var request = require('request');
+var settings = require('electron-settings');
+var WebSocketClient = require('websocket').client;
 
 //////
 // Global variables
 var active_connection = undefined;
-var url = 'http://localhost:8080/connector/websocket'
+var host = settings.get("host", "localhost")
+var port = settings.get("port", "8080")
 var client = new WebSocketClient();
-var connectionCooldown = 1;
+var connectionCooldown = 0;
+var connectionTimeout = undefined;
 
 //////
 // Functions
@@ -46,6 +49,10 @@ var displayMessage = function(message, sender){
   window.scrollTo(0, document.body.scrollHeight);
 }
 
+var getUrl = function(host, port) {
+  return `http://${host}:${port}/connector/websocket`
+}
+
 var updateStatusIndicator = function(status){
   status_indicator = document.getElementById("status-indicator")
   status_indicator.setAttribute('class', status)
@@ -81,30 +88,43 @@ var sendUserMessage = function(){
 
 var connectToWebsocket = function() {
   updateTooltipText('connecting')
-  request.post(url, function(error, response, body){
+  request.post(getUrl(host, port), function(error, response, body){
     if (error){
       console.log(error)
       updateTooltipText('disconnected')
       reconnectToWebSocket()
     } else {
       socket = JSON.parse(body)["socket"]
-      client.connect(`ws://localhost:8080/connector/websocket/${socket}`);
+      client.connect(`ws://${host}:${port}/connector/websocket/${socket}`);
     }
   })
 }
 
 var reconnectToWebSocket = function() {
+  if (active_connection && active_connection.connected) {
+    active_connection.close()
+  }
+  if (connectionTimeout){
+    clearTimeout(connectionTimeout);
+  }
   console.log(`Reconnecting in ${connectionCooldown} seconds.`)
   backoffCooldown()
-  setTimeout(connectToWebsocket, connectionCooldown * 1000);
+  connectionTimeout = setTimeout(connectToWebsocket, connectionCooldown * 1000);
+}
+
+var reconnectToWebSocketImmediately = function() {
+  resetCooldown();
+  reconnectToWebSocket();
 }
 
 var resetCooldown = function() {
-  connectionCooldown = 1;
+  connectionCooldown = 0;
 }
 
 var backoffCooldown = function(){
-    if (connectionCooldown < 60){
+    if (connectionCooldown <1 ) {
+      connectionCooldown = 1;
+    } else if (connectionCooldown < 60){
       connectionCooldown = connectionCooldown * 2
     }
 }
@@ -118,12 +138,13 @@ var sendMessageToSocket = function(connection, message) {
 }
 
 var handleSocketConnection = function(connection) {
-  active_connection = connection
-  resetCooldown()
+  active_connection = connection;
+  resetCooldown();
   console.log('WebSocket Client Connected');
-  updateStatusIndicator('active')
-  updateTooltipText('connected')
-  displayMessage('connected', 'info')
+  hideConnectionSettings();
+  updateStatusIndicator('active');
+  updateTooltipText('connected');
+  displayMessage('connected', 'info');
 
   connection.on('error', handleSocketError);
   connection.on('close', handleSocketClose);
@@ -132,12 +153,12 @@ var handleSocketConnection = function(connection) {
 
 var handleSocketFailedConnection = function(error) {
   console.log('Connect Error: ' + error.toString());
-  reconnectToWebSocket()
+  reconnectToWebSocket();
 }
 
 var handleSocketMessage = function(message) {
   if (message.type === 'utf8') {
-      displayMessage(message.utf8Data, "bot")
+      displayMessage(message.utf8Data, "bot");
   }
 }
 
@@ -163,14 +184,52 @@ var checkForReturnInPrompt = function(event) {
   }
 }
 
+var toggleConnectionSettings = function() {
+  var connectionSettings = document.getElementById("connection-settings")
+  connectionSettings.classList.toggle('active');
+}
+
+var hideConnectionSettings = function() {
+  var connectionSettings = document.getElementById("connection-settings")
+  connectionSettings.classList.remove('active');
+}
+
+var updateHost = function(event) {
+  settings.set("host", event.target.value);
+  host = settings.get("host", "localhost");
+  reconnectToWebSocketImmediately();
+}
+
+var updatePort = function(event) {
+  settings.set("port", event.target.value);
+  host = settings.get("port", "localhost");
+  reconnectToWebSocketImmediately();
+}
+
+var populateHostPort = function() {
+  if (settings.get("host", false)){
+    document.getElementById("host").value = settings.get("host");
+  }
+  if (settings.get("port", false)){
+    document.getElementById("port").value = settings.get("port");
+  }
+}
+
 //////
 // Event listeners
 client.on('connect', handleSocketConnection);
 client.on('connectFailed', handleSocketFailedConnection);
 document.getElementById("send").addEventListener("click", sendUserMessage);
 document.getElementById("input").addEventListener("keyup", checkForReturnInPrompt);
+document.getElementById("status-indicator").addEventListener("click", toggleConnectionSettings);
+document.getElementById("host").addEventListener("input", updateHost);
+document.getElementById("port").addEventListener("input", updatePort);
+document.getElementById("connect").addEventListener("click", reconnectToWebSocketImmediately);
+
+
 
 //////
 // Start
+populateHostPort();
 connectToWebsocket();
 document.getElementById("input").focus();
