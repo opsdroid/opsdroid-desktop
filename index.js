@@ -1,3 +1,5 @@
+'use strict';
+
 //////
 // Imports
 var request = require('request');
@@ -54,12 +56,12 @@ var getUrl = function(host, port) {
 }
 
 var updateStatusIndicator = function(status){
-  status_indicator = document.getElementById("status-indicator")
+  var status_indicator = document.getElementById("status-indicator")
   status_indicator.setAttribute('class', status)
 }
 
 var updateTooltipText = function(text){
-  tooltip = document.getElementById("status-indicator-tooltip")
+  var tooltip = document.getElementById("status-indicator-tooltip")
   tooltip.innerHTML = text
 }
 
@@ -74,7 +76,7 @@ var flashTooltip = function(){
 
 var sendUserMessage = function(){
   document.getElementById("input").focus();
-  user_message = document.getElementById("input").value
+  var user_message = document.getElementById("input").value
   if (active_connection && active_connection.connected) {
     if (user_message != ""){
       document.getElementById("input").value = ""
@@ -94,7 +96,7 @@ var connectToWebsocket = function() {
       updateTooltipText('disconnected')
       reconnectToWebSocket()
     } else {
-      socket = JSON.parse(body)["socket"]
+      var socket = JSON.parse(body)["socket"]
       client.connect(`ws://${host}:${port}/connector/websocket/${socket}`);
     }
   })
