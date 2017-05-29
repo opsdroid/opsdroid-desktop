@@ -4,24 +4,33 @@ language: c
 matrix:
   include:
   - os: osx
+
 cache:
   directories:
   - node_modules
   - app/node_modules
   - "$HOME/.electron"
   - "$HOME/.cache"
+
 addons:
   apt:
     packages:
     - libgnome-keyring-dev
     - icnsutils
+
 install:
 - nvm install 7
 - npm install -g electron-packager gulp
 - npm install
 - npm prune
+
 script:
 - gulp build
+
+
+before_deploy:
+- zip -r release_builds/opsdroid-desktop-darwin-x64/opsdroid-desktop.zip release_builds/opsdroid-desktop-darwin-x64/opsdroid-desktop.app
+
 deploy:
   provider: releases
   skip_cleanup: true
