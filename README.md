@@ -1,6 +1,7 @@
 # opsdroid desktop
 
 [![Build Status](https://travis-ci.org/opsdroid/opsdroid-desktop.svg?branch=master)](https://travis-ci.org/opsdroid/opsdroid-desktop)
+[![Dependency Status](https://dependencyci.com/github/opsdroid/opsdroid-desktop/badge)](https://dependencyci.com/github/opsdroid/opsdroid-desktop)
 
 An electron desktop application for testing opsdroid.
 
