@@ -1,0 +1,38 @@
+osx_image: xcode7.3
+sudo: required
+language: c
+matrix:
+  include:
+  - os: osx
+cache:
+  directories:
+  - node_modules
+  - app/node_modules
+  - "$HOME/.electron"
+  - "$HOME/.cache"
+addons:
+  apt:
+    packages:
+    - libgnome-keyring-dev
+    - icnsutils
+before_install:
+- mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v1.2.1/git-lfs-$([
+  "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-1.2.1.tar.gz
+  | tar -xz -C /tmp/git-lfs --strip-components 1 && /tmp/git-lfs/git-lfs pull
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --no-install-recommends
+  -y icnsutils graphicsmagick xz-utils; fi
+install:
+- nvm install 7
+- npm install electron-packager
+- npm install
+- npm prune
+script:
+- gulp build
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: k64ZeRUEoJx8HpGxdi5kZ1ETIOx+PGckDY3obTAxmdnoVLh0W1pXE5zsmtB1chLzAbxqdW15K+6ApcR7qIrTAK9y68/Z1g6XGYHYfIZAKVpiQSNrE4+CvvaM0V1oxRPT+kV9JKrswUKUG7gZoaSYjp+yuTJuqkMr1u0l0fJX9Uroq3tvNsSRbZ7/cJ4sXJnZCwQ/7yrPvHrBZ0/Kt2xCqmArzrg0Asvy1n5ueqIb2rw8aG5QXnC8bNT0rMHqZcKwm0BHL8Z5X/csSLJY2OBYS4IFhYRHoWd8RxGVYLzB39DLF4D4JSfVwDfhrDqluKBh69wcURhdtaS6ROCySK/dXuagd+TpHl6vhwtbGnBaUmH7rv19ekYNRM1iCAlb3135u09omYJc85Y0M0LrGw8n4Yqy9z3dQyTADOp29UBmYnMeYmHj4cSB8dFKQZHMeETsezLBt5aqWGsIiHK5x7brq/tUa7h0E081bPladkw/sgoU0eMGpKvKIdMdjuybsnvMGOGzbKNzFO62IujmALVyC/5dcqexV4GnSJDH6PHpqI8KMgn5SLhxz88z8qc77bhmQcjv9n0CXG4AKWMtFWLpW/ylry5MG/6HuzXTUKvHhDXNyEi1qWOOJK49mv6HreOLsV58f/UjfvDFtvXord3h5PFj2QiEIlawCZdB50BQE3g=
+  file: release_builds/opsdroid-desktop-darwin-x64/opsdroid-desktop.app
+  on:
+    tags: true
