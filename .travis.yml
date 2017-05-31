@@ -25,6 +25,7 @@ install:
   - npm prune
 
 script:
+  - gulp sass
   - gulp build-mac
 
 
