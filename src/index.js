@@ -1,10 +1,14 @@
 'use strict';
 
+
 //////
 // Imports
+import React from 'react';
+import ReactDOM from 'react-dom';
 var request = require('request');
 var settings = require('electron-settings');
 var WebSocketClient = require('websocket').client;
+
 
 //////
 // Global variables
@@ -14,6 +18,19 @@ var port = settings.get("port", "8080")
 var client = new WebSocketClient();
 var connectionCooldown = 0;
 var connectionTimeout = undefined;
+
+
+//////
+// Components
+const message = function(props){
+  return (
+    <li className={props.user}>{props.text}</li>
+    <li className="clearfix"></li>
+    <li className={props.user + " time"}>{props.time}</li>
+    <li className="clearfix"></li>
+  )
+}
+
 
 //////
 // Functions
@@ -217,6 +234,7 @@ var populateHostPort = function() {
   }
 }
 
+
 //////
 // Event listeners
 client.on('connect', handleSocketConnection);
@@ -229,9 +247,13 @@ document.getElementById("port").addEventListener("input", updatePort);
 document.getElementById("connect").addEventListener("click", reconnectToWebSocketImmediately);
 
 
-
 //////
 // Start
 populateHostPort();
 connectToWebsocket();
 document.getElementById("input").focus();
+
+ReactDOM.render(
+  <h1>Hello, world!</h1>,
+  document.getElementById('conversation')
+);

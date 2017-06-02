@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <title>Opsdroid Desktop</title>
-    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="../dist/css/index.css">
   </head>
   <body>
-    <img class="banner" src="./assets/banners/banner-eye-transparent.png" />
+    <img class="banner" src="../assets/banners/banner-eye-transparent.png" />
 
     <ul id="conversation">
     </ul>
@@ -27,6 +27,6 @@
 
   <script>
     require('electron-connect').client.create()
-    require('./index.js')
+    require('../dist/js/index.js')
   </script>
 </html>

@@ -1,5 +1,6 @@
 .node-version
 node_modules
 release_builds
+dist
 
 *.css
