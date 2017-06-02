@@ -14,6 +14,7 @@ import WebSocket from 'websocket';
 //////
 // Global variables
 var active_connection = undefined;
+var is_connected = false;
 var host = settings.get("host", "localhost")
 var port = settings.get("port", "8080")
 var client = new WebSocket.client();
@@ -74,9 +75,50 @@ class Conversation extends React.Component {
   }
 }
 
+class Prompt extends React.Component {
+  render(){
+    return (
+      <div id="prompt">
+        <input type="text" id="input" placeholder="say something..." />
+        <input type="submit" id="send" value="Send" />
+        <span id="status-indicator" className={this.props.connection ? "active" : "inactive"}>
+          <span id="status-indicator-tooltip">
+            {this.props.connection ? "connected" : "disconnected"}
+          </span>
+        </span>
+      </div>
+    )
+  }
+}
+
+class ConnectionSettings extends React.Component {
+  render(){
+    return (
+      <div id="connection-settings">
+        <input type="text" id="host" placeholder="localhost" defaultValue={this.props.host} />
+        <input type="text" id="port" placeholder="8080" defaultValue={this.props.port} />
+        <input type="submit" id="connect" value="Connect" />
+      </div>
+    )
+  }
+}
+
 
 //////
 // Functions
+var render = function(){
+  // Render the conversation
+  ReactDOM.render((
+    <div>
+      <Conversation items={conversation} />
+      <Prompt connection={is_connected} />
+      <ConnectionSettings host={host} port={port} />
+    </div>
+    ),
+    document.getElementById("wrapper")
+  );
+}
+
 var addMessage = function(message, sender){
   // Add new message to the conversation
   conversation.push({
@@ -84,12 +126,7 @@ var addMessage = function(message, sender){
     "user": sender,
     "time": new Date()
   })
-
-  // Render the conversation
-  ReactDOM.render(
-    <Conversation items={conversation}></Conversation>,
-    document.getElementById("wrapper")
-  );
+  render();
 }
 
 var getUrl = function(host, port) {
@@ -97,13 +134,8 @@ var getUrl = function(host, port) {
 }
 
 var updateStatusIndicator = function(status){
-  var status_indicator = document.getElementById("status-indicator")
-  status_indicator.setAttribute('class', status)
-}
-
-var updateTooltipText = function(text){
-  var tooltip = document.getElementById("status-indicator-tooltip")
-  tooltip.innerHTML = text
+  is_connected = status;
+  render();
 }
 
 var flashTooltip = function(){
@@ -129,11 +161,9 @@ var sendUserMessage = function(){
 }
 
 var connectToWebsocket = function() {
-  updateTooltipText('connecting')
   request.post(getUrl(host, port), function(error, response, body){
     if (error){
       console.log(error)
-      updateTooltipText('disconnected')
       reconnectToWebSocket()
     } else {
       var socket = JSON.parse(body)["socket"]
@@ -184,8 +214,7 @@ var handleSocketConnection = function(connection) {
   resetCooldown();
   console.log('WebSocket Client Connected');
   hideConnectionSettings();
-  updateStatusIndicator('active');
-  updateTooltipText('connected');
+  updateStatusIndicator(true);
   addMessage('connected', 'info');
 
   connection.on('error', handleSocketError);
@@ -206,16 +235,14 @@ var handleSocketMessage = function(message) {
 
 var handleSocketClose = function() {
   console.log('echo-protocol Connection Closed');
-  updateStatusIndicator('inactive')
-  updateTooltipText('disconnected')
+  updateStatusIndicator(false)
   reconnectToWebSocket()
   addMessage('disconnected', 'info')
 }
 
 var handleSocketError = function(error) {
   console.log("Connection Error: " + error.toString());
-  updateStatusIndicator('inactive')
-  updateTooltipText('disconnected')
+  updateStatusIndicator(false)
   addMessage('connection error', 'info')
 }
 
@@ -248,15 +275,9 @@ var updatePort = function(event) {
   reconnectToWebSocketImmediately();
 }
 
-var populateHostPort = function() {
-  if (settings.get("host", false)){
-    document.getElementById("host").value = settings.get("host");
-  }
-  if (settings.get("port", false)){
-    document.getElementById("port").value = settings.get("port");
-  }
-}
-
+//////
+// First render of React components
+render();
 
 //////
 // Event listeners
@@ -272,5 +293,4 @@ document.getElementById("connect").addEventListener("click", reconnectToWebSocke
 
 //////
 // Start
-populateHostPort();
 connectToWebsocket();
