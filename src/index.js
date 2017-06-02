@@ -18,16 +18,33 @@ var port = settings.get("port", "8080")
 var client = new WebSocketClient();
 var connectionCooldown = 0;
 var connectionTimeout = undefined;
+var conversation = []
 
 
 //////
 // Components
-const message = function(props){
+const Message = function(props){
   return (
-    <li className={props.user}>{props.text}</li>
-    <li className="clearfix"></li>
-    <li className={props.user + " time"}>{props.time}</li>
-    <li className="clearfix"></li>
+    <div>
+      <li className={props.user}>{props.text}</li>
+      <li className="clearfix"></li>
+      {props.user != "info" &&
+      <div>
+        <li className={props.user + " time"}>{props.time}</li>
+        <li className="clearfix"></li>
+      </div>
+      }
+    </div>
+  )
+}
+
+const Conversation = function(props){
+  return (
+    <div>
+        {props.items.map(item => (
+          <Message text={item["text"]} user={item["user"]} time={item["time"]}></Message>
+        ))}
+    </div>
   )
 }
 
@@ -35,34 +52,18 @@ const message = function(props){
 //////
 // Functions
 var displayMessage = function(message, sender){
-  // Get conversation list
-  var conversation = document.getElementById("conversation");
+  // Add new message to the conversation
+  conversation.push({
+    "text": message,
+    "user": sender,
+    "time": new Date().toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1")
+  })
 
-  // Append message to conversation
-  var li = document.createElement("li");
-  li.appendChild(document.createTextNode(message));
-  li.setAttribute("class", sender);
-  conversation.appendChild(li);
-
-  // Add a clearfix
-  var clearfix = document.createElement("li");
-  clearfix.setAttribute("class", "clearfix");
-  conversation.appendChild(clearfix);
-
-  // Add time
-  if (sender != 'info'){
-    var time = document.createElement("li");
-    time.appendChild(document.createTextNode(
-      new Date().toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1")
-    ));
-    time.setAttribute("class", sender + " time");
-    conversation.appendChild(time);
-  }
-
-  // Add a clearfix
-  var clearfix = document.createElement("li");
-  clearfix.setAttribute("class", "clearfix");
-  conversation.appendChild(clearfix);
+  // Render the conversation
+  ReactDOM.render(
+    <Conversation items={conversation}></Conversation>,
+    document.getElementById("conversation")
+  );
 
   // Scroll down to show new messages
   window.scrollTo(0, document.body.scrollHeight);
@@ -252,8 +253,3 @@ document.getElementById("connect").addEventListener("click", reconnectToWebSocke
 populateHostPort();
 connectToWebsocket();
 document.getElementById("input").focus();
-
-ReactDOM.render(
-  <h1>Hello, world!</h1>,
-  document.getElementById('conversation')
-);
