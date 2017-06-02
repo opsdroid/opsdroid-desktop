@@ -5,9 +5,10 @@
 // Imports
 import React from 'react';
 import ReactDOM from 'react-dom';
-var request = require('request');
-var settings = require('electron-settings');
-var WebSocketClient = require('websocket').client;
+import md5 from 'md5';
+import request from 'request';
+import settings from 'electron-settings';
+import WebSocket from 'websocket';
 
 
 //////
@@ -15,7 +16,7 @@ var WebSocketClient = require('websocket').client;
 var active_connection = undefined;
 var host = settings.get("host", "localhost")
 var port = settings.get("port", "8080")
-var client = new WebSocketClient();
+var client = new WebSocket.client();
 var connectionCooldown = 0;
 var connectionTimeout = undefined;
 var conversation = []
@@ -23,50 +24,72 @@ var conversation = []
 
 //////
 // Components
-const Message = function(props){
-  return (
-    <div>
-      <li className={props.user}>{props.text}</li>
-      <li className="clearfix"></li>
-      {props.user != "info" &&
+class Message extends React.Component {
+  formatTime(time){
+    return time.toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1")
+  }
+
+  render(){
+    return (
       <div>
-        <li className={props.user + " time"}>{props.time}</li>
-        <li className="clearfix"></li>
+        <li className={this.props.user}>{this.props.text}</li>
+        <li className="clearfix" />
+        {this.props.user != "info" &&
+        <div>
+          <li className={this.props.user + " time"}>
+            {this.formatTime(this.props.time)}
+          </li>
+          <li className="clearfix" />
+        </div>
+        }
       </div>
-      }
-    </div>
-  )
+    )
+  }
 }
 
-const Conversation = function(props){
-  return (
-    <div>
-        {props.items.map(item => (
-          <Message text={item["text"]} user={item["user"]} time={item["time"]}></Message>
-        ))}
-    </div>
-  )
+class Conversation extends React.Component {
+  generateKey(item){
+    return md5(item["user"] + item["text"] + item["time"].toTimeString())
+  }
+
+  render(){
+    return (
+      <ul id="conversation">
+          {this.props.items.map(item => (
+            <Message text={item["text"]} user={item["user"]}
+                     time={item["time"]} key={this.generateKey(item)} />
+          ))}
+      </ul>
+    )
+  }
+
+  componentDidUpdate(){
+    // Scroll down to show new messages
+    window.scrollTo(0, document.body.scrollHeight);
+    document.getElementById("input").focus();
+  }
+
+  componentDidMount(){
+    document.getElementById("input").focus();
+  }
 }
 
 
 //////
 // Functions
-var displayMessage = function(message, sender){
+var addMessage = function(message, sender){
   // Add new message to the conversation
   conversation.push({
     "text": message,
     "user": sender,
-    "time": new Date().toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1")
+    "time": new Date()
   })
 
   // Render the conversation
   ReactDOM.render(
     <Conversation items={conversation}></Conversation>,
-    document.getElementById("conversation")
+    document.getElementById("wrapper")
   );
-
-  // Scroll down to show new messages
-  window.scrollTo(0, document.body.scrollHeight);
 }
 
 var getUrl = function(host, port) {
@@ -93,12 +116,11 @@ var flashTooltip = function(){
 }
 
 var sendUserMessage = function(){
-  document.getElementById("input").focus();
   var user_message = document.getElementById("input").value
   if (active_connection && active_connection.connected) {
     if (user_message != ""){
       document.getElementById("input").value = ""
-      displayMessage(user_message, "user")
+      addMessage(user_message, "user")
       sendMessageToSocket(active_connection, user_message);
     }
   } else {
@@ -164,7 +186,7 @@ var handleSocketConnection = function(connection) {
   hideConnectionSettings();
   updateStatusIndicator('active');
   updateTooltipText('connected');
-  displayMessage('connected', 'info');
+  addMessage('connected', 'info');
 
   connection.on('error', handleSocketError);
   connection.on('close', handleSocketClose);
@@ -178,7 +200,7 @@ var handleSocketFailedConnection = function(error) {
 
 var handleSocketMessage = function(message) {
   if (message.type === 'utf8') {
-      displayMessage(message.utf8Data, "bot");
+      addMessage(message.utf8Data, "bot");
   }
 }
 
@@ -187,14 +209,14 @@ var handleSocketClose = function() {
   updateStatusIndicator('inactive')
   updateTooltipText('disconnected')
   reconnectToWebSocket()
-  displayMessage('disconnected', 'info')
+  addMessage('disconnected', 'info')
 }
 
 var handleSocketError = function(error) {
   console.log("Connection Error: " + error.toString());
   updateStatusIndicator('inactive')
   updateTooltipText('disconnected')
-  displayMessage('connection error', 'info')
+  addMessage('connection error', 'info')
 }
 
 var checkForReturnInPrompt = function(event) {
@@ -252,4 +274,3 @@ document.getElementById("connect").addEventListener("click", reconnectToWebSocke
 // Start
 populateHostPort();
 connectToWebsocket();
-document.getElementById("input").focus();
