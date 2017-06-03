@@ -22,7 +22,7 @@ gulp.task('serve', function () {
   gulp.watch('main.js', electron.restart);
 
   // Reload renderer process
-  gulp.watch(['src/index.js', 'src/index.html', 'src/index.scss'], function(){
+  gulp.watch(['src/**/*.js', 'src/index.html', 'src/index.scss'], function(){
     gulp.start('babel');
     gulp.start('sass');
     electron.reload()
@@ -48,7 +48,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task("babel", function () {
-  return gulp.src("./src/index.js")
+  return gulp.src("./src/**/*.js")
     .pipe(babel())
     .pipe(gulp.dest("./dist/js"));
 });
