@@ -4,6 +4,7 @@
 //////
 // Imports
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 
 export default class Prompt extends React.Component {
@@ -33,13 +34,22 @@ export default class Prompt extends React.Component {
     );
   }
 
+  componentDidMount() {
+    this.focus();
+  }
+
+  focus() {
+    ReactDOM.findDOMNode(this.refs.input).focus();
+  }
+
   handleInput(event) {
     this.setState({input: event.target.value});
   }
 
   handleSend(){
     this.props.sendUserMessage(this.state.input);
-    this.setState({input: ''})
+    this.setState({input: ''});
+    this.focus()
   }
 
   checkForEnter(event) {

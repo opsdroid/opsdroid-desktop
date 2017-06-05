@@ -28,10 +28,5 @@ export default class Conversation extends React.Component {
   componentDidUpdate(){
     // Scroll down to show new messages
     window.scrollTo(0, document.body.scrollHeight);
-    document.getElementById("input").focus();
-  }
-
-  componentDidMount(){
-    document.getElementById("input").focus();
   }
 }
