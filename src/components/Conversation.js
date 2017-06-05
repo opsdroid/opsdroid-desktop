@@ -10,11 +10,11 @@ import Message from './Message';
 
 
 export default class Conversation extends React.Component {
-  generateKey(item){
+  generateKey(item) {
     return md5(item["user"] + item["text"] + item["time"].toTimeString());
   }
 
-  render(){
+  render() {
     return (
       <ul id="conversation">
           {this.props.items.map(item => (
@@ -25,7 +25,7 @@ export default class Conversation extends React.Component {
     );
   }
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     // Scroll down to show new messages
     window.scrollTo(0, document.body.scrollHeight);
   }

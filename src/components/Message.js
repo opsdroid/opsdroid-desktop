@@ -7,11 +7,11 @@ import React from 'react';
 
 
 export default class Message extends React.Component {
-  getTime(){
+  getTime() {
     return this.props.time.toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1");
   }
 
-  render(){
+  render() {
     return (
       <div>
         <li className={this.props.user}>{this.props.text}</li>

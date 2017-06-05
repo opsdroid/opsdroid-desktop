@@ -11,7 +11,7 @@ export default class ConnectionSettings extends React.Component {
     super(props);
   }
 
-  render(){
+  render() {
     return (
       <div id="connection-settings" className={this.props.visible ? "active" : "inactive"}>
         <input type="text"

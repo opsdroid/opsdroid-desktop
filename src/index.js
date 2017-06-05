@@ -50,9 +50,9 @@ class ChatClient extends React.Component {
     this.reconnectToWebSocketImmediately = this.reconnectToWebSocketImmediately.bind(this);
 
     this.client.on('connect', (connection) => {
+      console.log('WebSocket Client Connected');
       this.active_connection = connection;
       this.resetCooldown();
-      console.log('WebSocket Client Connected');
       this.hideConnectionSettings();
       this.updateStatusIndicator(true);
       this.addMessage('connected', 'info');
@@ -83,7 +83,7 @@ class ChatClient extends React.Component {
     });
   }
 
-  render(){
+  render() {
     return (
       <div>
         <Conversation
@@ -105,11 +105,11 @@ class ChatClient extends React.Component {
     );
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.connectToWebsocket();
   }
 
-  addMessage(message, sender){
+  addMessage(message, sender) {
     // Add new message to the conversation
     this.setState((prevState, props) => ({
       conversation: prevState.conversation.concat([{
@@ -120,13 +120,13 @@ class ChatClient extends React.Component {
     }));
   }
 
-  updateStatusIndicator(status){
+  updateStatusIndicator(status) {
     this.setState({connected: status});
   }
 
-  sendUserMessage(user_message){
+  sendUserMessage(user_message) {
     if (this.active_connection && this.active_connection.connected) {
-      if (user_message != ""){
+      if (user_message != "") {
         this.addMessage(user_message, "user");
         this.sendMessageToSocket(this.active_connection, user_message);
       }
@@ -135,7 +135,7 @@ class ChatClient extends React.Component {
 
   connectToWebsocket() {
     request.post(formatPostUrl(this.state.host, this.state.port), (error, response, body) => {
-      if (error){
+      if (error) {
         console.log(error);
         this.reconnectToWebSocket();
       } else {
@@ -149,7 +149,7 @@ class ChatClient extends React.Component {
     if (this.active_connection && this.active_connection.connected) {
       this.active_connection.close();
     }
-    if (this.connectionTimeout){
+    if (this.connectionTimeout) {
       clearTimeout(this.connectionTimeout);
     }
     console.log(`Reconnecting in ${this.connectionCooldown} seconds.`);
@@ -166,10 +166,10 @@ class ChatClient extends React.Component {
     this.connectionCooldown = 0;
   }
 
-  backoffCooldown(){
+  backoffCooldown() {
       if (this.connectionCooldown <1 ) {
         this.connectionCooldown = 1;
-      } else if (this.connectionCooldown < 5){
+      } else if (this.connectionCooldown < 5) {
         this.connectionCooldown = this.connectionCooldown * 2;
       }
   }

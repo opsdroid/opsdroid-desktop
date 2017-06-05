@@ -20,7 +20,7 @@ export default class Prompt extends React.Component {
     this.handleSend = this.handleSend.bind(this);
   }
 
-  render(){
+  render() {
     return (
       <div id="prompt">
         <input type="text" ref="input" id="input" placeholder="say something..." onChange={this.handleInput} onKeyUp={this.checkForEnter} value={this.state.input} />
@@ -46,10 +46,10 @@ export default class Prompt extends React.Component {
     this.setState({input: event.target.value});
   }
 
-  handleSend(){
+  handleSend() {
     this.props.sendUserMessage(this.state.input);
     this.setState({input: ''});
-    this.focus()
+    this.focus();
   }
 
   checkForEnter(event) {
