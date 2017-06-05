@@ -17,6 +17,12 @@ import ConnectionSettings from './components/ConnectionSettings';
 
 
 //////
+// Constants
+const DEFAULT_HOST = "localhost";
+const DEFAULT_PORT = "8080";
+
+
+//////
 // Main Class
 class ChatClient extends React.Component {
   constructor(props) {
@@ -25,8 +31,8 @@ class ChatClient extends React.Component {
       conversation: [],
       connected: false,
       showConnectionSettings: false,
-      host: settings.get("host", "localhost"),
-      port: settings.get("port", "8080"),
+      host: settings.get("host", DEFAULT_HOST),
+      port: settings.get("port", DEFAULT_PORT),
     };
 
     this.active_connection = undefined;
@@ -89,6 +95,8 @@ class ChatClient extends React.Component {
         <ConnectionSettings
           host={this.state.host}
           port={this.state.port}
+          defaultHost={DEFAULT_HOST}
+          defaultPort={DEFAULT_PORT}
           visible={this.state.showConnectionSettings}
           updateHost={this.updateHost}
           updatePort={this.updatePort}
