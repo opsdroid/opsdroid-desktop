@@ -17,25 +17,32 @@ import ConnectionSettings from './components/ConnectionSettings';
 
 
 //////
-// Functions
-
+// Main Class
 class ChatClient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       conversation: [],
       connected: false,
+      showConnectionSettings: false,
+      host: settings.get("host", "localhost"),
+      port: settings.get("port", "8080")
     };
 
     this.active_connection = undefined;
-    this.host = settings.get("host", "localhost");
-    this.port = settings.get("port", "8080");
     this.client = new WebSocket.client();
     this.connectionCooldown = 0;
     this.connectionTimeout = undefined;
 
     //////
     // Event listeners
+    this.toggleConnectionSettings = this.toggleConnectionSettings.bind(this);
+    this.sendUserMessage = this.sendUserMessage.bind(this);
+    this.updateHost = this.updateHost.bind(this);
+    this.updatePort = this.updatePort.bind(this);
+    this.connectToWebsocket = this.connectToWebsocket.bind(this);
+    this.reconnectToWebSocketImmediately = this.reconnectToWebSocketImmediately.bind(this);
+
     this.client.on('connect', (connection) => {
       this.active_connection = connection;
       this.resetCooldown();
@@ -44,7 +51,7 @@ class ChatClient extends React.Component {
       this.updateStatusIndicator(true);
       this.addMessage('connected', 'info');
 
-      connection.on('error', (error) =>{
+      connection.on('error', (error) => {
         console.log("Connection Error: " + error.toString());
         this.updateStatusIndicator(false);
         this.addMessage('connection error', 'info');
@@ -75,20 +82,21 @@ class ChatClient extends React.Component {
   render(){
     return (
       <div>
-        <Conversation items={this.state.conversation} />
-        <Prompt connection={this.state.connected} />
-        <ConnectionSettings host={this.host} port={this.port} />
+        <Conversation
+          items={this.state.conversation} />
+        <Prompt
+          connection={this.state.connected}
+          toggleConnectionSettings={this.toggleConnectionSettings}
+          sendUserMessage={this.sendUserMessage} />
+        <ConnectionSettings
+          host={this.state.host}
+          port={this.state.port}
+          visible={this.state.showConnectionSettings}
+          updateHost={this.updateHost}
+          updatePort={this.updatePort}
+          reconnectToWebSocketImmediately={this.reconnectToWebSocketImmediately} />
       </div>
     );
-  }
-
-  componentDidMount(){
-    document.getElementById("send").addEventListener("click", this.sendUserMessage.bind(this));
-    document.getElementById("input").addEventListener("keyup", this.checkForReturnInPrompt.bind(this));
-    document.getElementById("status-indicator").addEventListener("click", this.toggleConnectionSettings);
-    document.getElementById("host").addEventListener("input", this.updateHost.bind(this));
-    document.getElementById("port").addEventListener("input", this.updatePort.bind(this));
-    document.getElementById("connect").addEventListener("click", this.reconnectToWebSocketImmediately.bind(this));
   }
 
   addMessage(message, sender){
@@ -107,6 +115,7 @@ class ChatClient extends React.Component {
   }
 
   sendUserMessage(){
+    // TODO: The input data should be controlled state
     var user_message = document.getElementById("input").value;
     if (this.active_connection && this.active_connection.connected) {
       if (user_message != ""){
@@ -118,13 +127,13 @@ class ChatClient extends React.Component {
   }
 
   connectToWebsocket() {
-    request.post(formatPostUrl(this.host, this.port), (error, response, body) => {
+    request.post(formatPostUrl(this.state.host, this.state.port), (error, response, body) => {
       if (error){
         console.log(error);
         this.reconnectToWebSocket();
       } else {
         var socket = JSON.parse(body)["socket"];
-        this.client.connect(formatSocketUrl(this.host, this.port, socket));
+        this.client.connect(formatSocketUrl(this.state.host, this.state.port, socket));
       }
     })
   }
@@ -137,8 +146,8 @@ class ChatClient extends React.Component {
       clearTimeout(this.connectionTimeout);
     }
     console.log(`Reconnecting in ${this.connectionCooldown} seconds.`);
+    this.connectionTimeout = setTimeout(this.connectToWebsocket, this.connectionCooldown * 1000);
     this.backoffCooldown();
-    this.connectionTimeout = setTimeout(this.connectToWebsocket.bind(this), this.connectionCooldown * 1000);
   }
 
   reconnectToWebSocketImmediately() {
@@ -153,7 +162,7 @@ class ChatClient extends React.Component {
   backoffCooldown(){
       if (this.connectionCooldown <1 ) {
         this.connectionCooldown = 1;
-      } else if (this.connectionCooldown < 60){
+      } else if (this.connectionCooldown < 5){
         this.connectionCooldown = this.connectionCooldown * 2;
       }
   }
@@ -166,36 +175,33 @@ class ChatClient extends React.Component {
     }
   }
 
-  checkForReturnInPrompt(event) {
-    event.preventDefault();
-    if (event.keyCode == 13) {
-        this.sendUserMessage();
-    }
-  }
-
   toggleConnectionSettings() {
-    var connectionSettings = document.getElementById("connection-settings");
-    connectionSettings.classList.toggle('active');
+    this.setState((prevState, props) => ({
+      showConnectionSettings: ! prevState.showConnectionSettings
+    }));
   }
 
   hideConnectionSettings() {
-    var connectionSettings = document.getElementById("connection-settings");
-    connectionSettings.classList.remove('active');
+    this.setState({
+      showConnectionSettings: false
+    });
   }
 
   updateHost(event) {
     settings.set("host", event.target.value);
-    this.host = settings.get("host", "localhost");
+    this.setState({host: settings.get("host", "localhost")});
     this.reconnectToWebSocketImmediately();
   }
 
   updatePort(event) {
     settings.set("port", event.target.value);
-    this.port = settings.get("port", "localhost");
+    this.setState({port: settings.get("port", "localhost")});
     this.reconnectToWebSocketImmediately();
   }
 }
 
+//////
+// Start
 ReactDOM.render(<ChatClient />,
   document.getElementById("wrapper")
 );
