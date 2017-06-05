@@ -75,8 +75,6 @@ class ChatClient extends React.Component {
       console.log('Connect Error: ' + error.toString());
       this.reconnectToWebSocket();
     });
-
-    this.connectToWebsocket();
   }
 
   render(){
@@ -97,6 +95,10 @@ class ChatClient extends React.Component {
           reconnectToWebSocketImmediately={this.reconnectToWebSocketImmediately} />
       </div>
     );
+  }
+
+  componentDidMount(){
+    this.connectToWebsocket();
   }
 
   addMessage(message, sender){
