@@ -28,7 +28,6 @@ class ChatClient extends React.Component {
     };
 
     this.active_connection = undefined;
-    this.is_connected = false;
     this.host = settings.get("host", "localhost");
     this.port = settings.get("port", "8080");
     this.client = new WebSocket.client();
@@ -37,14 +36,38 @@ class ChatClient extends React.Component {
 
     //////
     // Event listeners
-    this.client.on('connect', this.handleSocketConnection);
-    this.client.on('connectFailed', this.handleSocketFailedConnection);
-    document.getElementById("send").addEventListener("click", this.sendUserMessage);
-    document.getElementById("input").addEventListener("keyup", this.checkForReturnInPrompt);
-    document.getElementById("status-indicator").addEventListener("click", this.toggleConnectionSettings);
-    document.getElementById("host").addEventListener("input", this.updateHost);
-    document.getElementById("port").addEventListener("input", this.updatePort);
-    document.getElementById("connect").addEventListener("click", this.reconnectToWebSocketImmediately);
+    this.client.on('connect', (connection) => {
+      this.active_connection = connection;
+      this.resetCooldown();
+      console.log('WebSocket Client Connected');
+      this.hideConnectionSettings();
+      this.updateStatusIndicator(true);
+      this.addMessage('connected', 'info');
+
+      connection.on('error', (error) =>{
+        console.log("Connection Error: " + error.toString());
+        this.updateStatusIndicator(false);
+        this.addMessage('connection error', 'info');
+      });
+
+      connection.on('close', () => {
+        console.log('echo-protocol Connection Closed');
+        this.updateStatusIndicator(false);
+        this.reconnectToWebSocket();
+        this.addMessage('disconnected', 'info');
+      });
+
+      connection.on('message', (message) => {
+        if (message.type === 'utf8') {
+            this.addMessage(message.utf8Data, "bot");
+        }
+      });
+    });
+
+    this.client.on('connectFailed', (error) => {
+      console.log('Connect Error: ' + error.toString());
+      this.reconnectToWebSocket();
+    });
 
     this.connectToWebsocket();
   }
@@ -52,21 +75,30 @@ class ChatClient extends React.Component {
   render(){
     return (
       <div>
-        <Conversation items={this.conversation} />
-        <Prompt connection={this.is_connected} />
+        <Conversation items={this.state.conversation} />
+        <Prompt connection={this.state.connected} />
         <ConnectionSettings host={this.host} port={this.port} />
       </div>
     );
   }
 
+  componentDidMount(){
+    document.getElementById("send").addEventListener("click", this.sendUserMessage.bind(this));
+    document.getElementById("input").addEventListener("keyup", this.checkForReturnInPrompt.bind(this));
+    document.getElementById("status-indicator").addEventListener("click", this.toggleConnectionSettings);
+    document.getElementById("host").addEventListener("input", this.updateHost.bind(this));
+    document.getElementById("port").addEventListener("input", this.updatePort.bind(this));
+    document.getElementById("connect").addEventListener("click", this.reconnectToWebSocketImmediately.bind(this));
+  }
+
   addMessage(message, sender){
     // Add new message to the conversation
     this.setState((prevState, props) => ({
-      conversation: prevState.conversation.push({
+      conversation: prevState.conversation.concat([{
         "text": message,
         "user": sender,
         "time": new Date()
-      })
+      }])
     }));
   }
 
@@ -80,16 +112,16 @@ class ChatClient extends React.Component {
       if (user_message != ""){
         document.getElementById("input").value = "";
         this.addMessage(user_message, "user");
-        sendMessageToSocket(this.active_connection, user_message);
+        this.sendMessageToSocket(this.active_connection, user_message);
       }
     }
   }
 
   connectToWebsocket() {
-    request.post(formatPostUrl(this.host, this.port), function(error, response, body){
+    request.post(formatPostUrl(this.host, this.port), (error, response, body) => {
       if (error){
         console.log(error);
-        reconnectToWebSocket();
+        this.reconnectToWebSocket();
       } else {
         var socket = JSON.parse(body)["socket"];
         this.client.connect(formatSocketUrl(this.host, this.port, socket));
@@ -106,7 +138,7 @@ class ChatClient extends React.Component {
     }
     console.log(`Reconnecting in ${this.connectionCooldown} seconds.`);
     this.backoffCooldown();
-    this.connectionTimeout = setTimeout(connectToWebsocket, this.connectionCooldown * 1000);
+    this.connectionTimeout = setTimeout(this.connectToWebsocket.bind(this), this.connectionCooldown * 1000);
   }
 
   reconnectToWebSocketImmediately() {
@@ -132,43 +164,6 @@ class ChatClient extends React.Component {
     } else {
         console.log("Unable to send message");
     }
-  }
-
-  handleSocketConnection(connection) {
-    this.active_connection = connection;
-    this.resetCooldown();
-    console.log('WebSocket Client Connected');
-    this.hideConnectionSettings();
-    this.updateStatusIndicator(true);
-    this.addMessage('connected', 'info');
-
-    connection.on('error', this.handleSocketError);
-    connection.on('close', this.handleSocketClose);
-    connection.on('message', this.handleSocketMessage);
-  }
-
-  handleSocketFailedConnection(error) {
-    console.log('Connect Error: ' + error.toString());
-    this.reconnectToWebSocket();
-  }
-
-  handleSocketMessage(message) {
-    if (message.type === 'utf8') {
-        this.addMessage(message.utf8Data, "bot");
-    }
-  }
-
-  handleSocketClose() {
-    console.log('echo-protocol Connection Closed');
-    this.updateStatusIndicator(false);
-    this.reconnectToWebSocket();
-    this.addMessage('disconnected', 'info');
-  }
-
-  handleSocketError(error) {
-    console.log("Connection Error: " + error.toString());
-    this.updateStatusIndicator(false);
-    this.addMessage('connection error', 'info');
   }
 
   checkForReturnInPrompt(event) {
