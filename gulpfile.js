@@ -8,12 +8,8 @@ var electron = require('electron-connect').server.create();
 var package_info = require('./package.json')
 
 gulp.task('serve', function () {
-
-  // Compile the JavaScript
-  gulp.start('babel');
-
-  // Compile the sass
-  gulp.start('sass');
+  // Compile
+  gulp.start('compile');
 
   // Start browser process
   electron.start();
@@ -22,9 +18,9 @@ gulp.task('serve', function () {
   gulp.watch('main.js', electron.restart);
 
   // Reload renderer process
-  gulp.watch(['src/**/*.js', 'src/index.html', 'src/index.scss'], function(){
-    gulp.start('babel');
-    gulp.start('sass');
+  gulp.watch(['src/**/*.js', 'src/**/*.html', 'src/**/*.scss'], function(){
+    // Recompile
+    gulp.start('compile');
     electron.reload()
   });
 });
@@ -52,5 +48,13 @@ gulp.task("babel", function () {
     .pipe(babel())
     .pipe(gulp.dest("./dist/js"));
 });
+
+gulp.task("compile", function() {
+  // Compile the JavaScript
+  gulp.start('babel');
+
+  // Compile the sass
+  gulp.start('sass');
+})
 
 gulp.task('default', ['serve']);
