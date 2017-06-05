@@ -49,38 +49,14 @@ class ChatClient extends React.Component {
     this.connectToWebsocket = this.connectToWebsocket.bind(this);
     this.reconnectToWebSocketImmediately = this.reconnectToWebSocketImmediately.bind(this);
 
-    this.client.on('connect', (connection) => {
-      console.log('WebSocket Client Connected');
-      this.active_connection = connection;
-      this.resetCooldown();
-      this.hideConnectionSettings();
-      this.updateStatusIndicator(true);
-      this.addMessage('connected', 'info');
+    this.handleSocketConnect = this.handleSocketConnect.bind(this);
+    this.handleSocketFailedToConnect = this.handleSocketFailedToConnect.bind(this);
+    this.handleSocketError = this.handleSocketError.bind(this);
+    this.handleSocketClose = this.handleSocketClose.bind(this);
+    this.handleSocketMessage = this.handleSocketMessage.bind(this);
 
-      connection.on('error', (error) => {
-        console.log("Connection Error: " + error.toString());
-        this.updateStatusIndicator(false);
-        this.addMessage('connection error', 'info');
-      });
-
-      connection.on('close', () => {
-        console.log('echo-protocol Connection Closed');
-        this.updateStatusIndicator(false);
-        this.reconnectToWebSocket();
-        this.addMessage('disconnected', 'info');
-      });
-
-      connection.on('message', (message) => {
-        if (message.type === 'utf8') {
-            this.addMessage(message.utf8Data, "bot");
-        }
-      });
-    });
-
-    this.client.on('connectFailed', (error) => {
-      console.log('Connect Error: ' + error.toString());
-      this.reconnectToWebSocket();
-    });
+    this.client.on('connect', this.handleSocketConnect);
+    this.client.on('connectFailed', this.handleSocketFailedToConnect);
   }
 
   render() {
@@ -107,6 +83,43 @@ class ChatClient extends React.Component {
 
   componentDidMount() {
     this.connectToWebsocket();
+  }
+
+  handleSocketConnect(connection){
+    console.log('WebSocket Client Connected');
+    this.active_connection = connection;
+    this.resetCooldown();
+    this.hideConnectionSettings();
+    this.updateStatusIndicator(true);
+    this.addMessage('connected', 'info');
+
+    connection.on('error', this.handleSocketError);
+    connection.on('close', this.handleSocketClose );
+    connection.on('message', this.handleSocketMessage );
+  }
+
+  handleSocketFailedToConnect(error) {
+    console.log('Connect Error: ' + error.toString());
+    this.reconnectToWebSocket();
+  }
+
+  handleSocketError(error) {
+    console.log("Connection Error: " + error.toString());
+    this.updateStatusIndicator(false);
+    this.addMessage('connection error', 'info');
+  }
+
+  handleSocketClose() {
+    console.log('echo-protocol Connection Closed');
+    this.updateStatusIndicator(false);
+    this.reconnectToWebSocket();
+    this.addMessage('disconnected', 'info');
+  }
+
+  handleSocketMessage(message) {
+    if (message.type === 'utf8') {
+        this.addMessage(message.utf8Data, "bot");
+    }
   }
 
   addMessage(message, sender) {
