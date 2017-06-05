@@ -26,7 +26,7 @@ class ChatClient extends React.Component {
       connected: false,
       showConnectionSettings: false,
       host: settings.get("host", "localhost"),
-      port: settings.get("port", "8080")
+      port: settings.get("port", "8080"),
     };
 
     this.active_connection = undefined;
@@ -85,7 +85,7 @@ class ChatClient extends React.Component {
         <Conversation
           items={this.state.conversation} />
         <Prompt
-          connection={this.state.connected}
+          connected={this.state.connected}
           toggleConnectionSettings={this.toggleConnectionSettings}
           sendUserMessage={this.sendUserMessage} />
         <ConnectionSettings
@@ -114,12 +114,9 @@ class ChatClient extends React.Component {
     this.setState({connected: status});
   }
 
-  sendUserMessage(){
-    // TODO: The input data should be controlled state
-    var user_message = document.getElementById("input").value;
+  sendUserMessage(user_message){
     if (this.active_connection && this.active_connection.connected) {
       if (user_message != ""){
-        document.getElementById("input").value = "";
         this.addMessage(user_message, "user");
         this.sendMessageToSocket(this.active_connection, user_message);
       }
