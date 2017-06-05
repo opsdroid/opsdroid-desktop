@@ -34,7 +34,7 @@ gulp.task('build-mac', shell.task([
 ]));
 
 gulp.task('zip', shell.task([
-  `zip -FSr release_builds/opsdroid-desktop-darwin-x64/opsdroid-desktop-${package_info.version}-macos-x64.zip release_builds/opsdroid-desktop-darwin-x64/opsdroid-desktop.app`
+  `cd release_builds/opsdroid-desktop-darwin-x64 && zip -FSr opsdroid-desktop-${package_info.version}-macos-x64.zip opsdroid-desktop.app`
 ]));
 
 gulp.task('sass', function () {
