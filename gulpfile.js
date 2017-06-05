@@ -52,3 +52,5 @@ gulp.task("babel", function () {
     .pipe(babel())
     .pipe(gulp.dest("./dist/js"));
 });
+
+gulp.task('default', ['serve']);

@@ -5,10 +5,15 @@
 // Imports
 import React from 'react';
 import ReactDOM from 'react-dom';
-import md5 from 'md5';
 import request from 'request';
 import settings from 'electron-settings';
 import WebSocket from 'websocket';
+
+import {formatPostUrl, formatSocketUrl} from './utils';
+
+import Conversation from './components/Conversation';
+import Prompt from './components/Prompt';
+import ConnectionSettings from './components/ConnectionSettings';
 
 
 //////
@@ -24,23 +29,30 @@ var conversation = [];
 
 
 //////
-// Components
-import Conversation from './components/Conversation';
-import Prompt from './components/Prompt';
-import ConnectionSettings from './components/ConnectionSettings';
-
-
-//////
 // Functions
+
+class ChatClient extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      conversation: [],
+    };
+  }
+
+  render(){
+    return (
+      <div>
+        <Conversation items={conversation} />
+        <Prompt connection={is_connected} />
+        <ConnectionSettings host={host} port={port} />
+      </div>
+    );
+  }
+}
+
 var render = function(){
   // Render the conversation
-  ReactDOM.render((
-    <div>
-      <Conversation items={conversation} />
-      <Prompt connection={is_connected} />
-      <ConnectionSettings host={host} port={port} />
-    </div>
-    ),
+  ReactDOM.render(<ChatClient />,
     document.getElementById("wrapper")
   );
 }
@@ -55,22 +67,9 @@ var addMessage = function(message, sender){
   render();
 }
 
-var getUrl = function(host, port) {
-  return `http://${host}:${port}/connector/websocket`;
-}
-
 var updateStatusIndicator = function(status){
   is_connected = status;
   render();
-}
-
-var flashTooltip = function(){
-  document.getElementById("status-indicator-tooltip")
-    .setAttribute('class', 'active');
-  setTimeout(function(){
-    document.getElementById("status-indicator-tooltip")
-      .setAttribute('class', '');
-  }, 1000);
 }
 
 var sendUserMessage = function(){
@@ -81,19 +80,17 @@ var sendUserMessage = function(){
       addMessage(user_message, "user");
       sendMessageToSocket(active_connection, user_message);
     }
-  } else {
-    flashTooltip();
   }
 }
 
 var connectToWebsocket = function() {
-  request.post(getUrl(host, port), function(error, response, body){
+  request.post(formatPostUrl(host, port), function(error, response, body){
     if (error){
       console.log(error);
       reconnectToWebSocket();
     } else {
       var socket = JSON.parse(body)["socket"];
-      client.connect(`ws://${host}:${port}/connector/websocket/${socket}`);
+      client.connect(formatSocketUrl(host, port, socket));
     }
   })
 }

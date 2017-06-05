@@ -7,6 +7,10 @@ import React from 'react';
 
 
 export default class Prompt extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render(){
     return (
       <div id="prompt">
