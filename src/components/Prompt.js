@@ -13,6 +13,7 @@ export default class Prompt extends React.Component {
 
     this.state = {
       input: '',
+      showTooltip: false,
     }
 
     this.checkForEnter = this.checkForEnter.bind(this);
@@ -23,10 +24,10 @@ export default class Prompt extends React.Component {
   render() {
     return (
       <div id="prompt">
-        <input type="text" ref="input" id="input" placeholder="say something..." onChange={this.handleInput} onKeyUp={this.checkForEnter} value={this.state.input} />
+        <input type="text" ref={(input) => { this.textInput = input; }} id="input" placeholder="say something..." onChange={this.handleInput} onKeyUp={this.checkForEnter} value={this.state.input} />
         <input type="submit" id="send" value="Send" onClick={this.handleSend} />
         <span id="status-indicator" onClick={this.props.toggleConnectionSettings} className={this.props.connected ? "active" : "inactive"}>
-          <span id="status-indicator-tooltip">
+          <span id="status-indicator-tooltip" className={this.state.showTooltip ? "active" : "inactive"}>
             {this.props.connected ? "connected" : "disconnected"}
           </span>
         </span>
@@ -39,7 +40,7 @@ export default class Prompt extends React.Component {
   }
 
   focus() {
-    ReactDOM.findDOMNode(this.refs.input).focus();
+    this.textInput.focus();
   }
 
   handleInput(event) {
@@ -47,9 +48,20 @@ export default class Prompt extends React.Component {
   }
 
   handleSend() {
-    this.props.sendUserMessage(this.state.input);
-    this.setState({input: ''});
+    if (this.props.connected){
+      this.props.sendUserMessage(this.state.input);
+      this.setState({input: ''});
+    } else {
+      this.flashTooltip();
+    }
     this.focus();
+  }
+
+  flashTooltip(){
+    this.setState({showTooltip: true});
+    setTimeout(() => {
+      this.setState({showTooltip: false})
+    }, 1000);
   }
 
   checkForEnter(event) {
