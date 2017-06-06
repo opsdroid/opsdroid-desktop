@@ -1,0 +1,30 @@
+@import '../vars';
+
+#connection-settings {
+  display: none;
+  position: fixed;
+  width: 100%;
+  left: 0px;
+  bottom: $prompt-height;
+  background-color: $opsdroid-grey-medium;
+  border-bottom: 1px solid $opsdroid-grey;
+
+  input[type=text] {
+    border-right: 2px solid $opsdroid-grey;
+    background-color: $opsdroid-grey-dark;
+    width: 40%;
+  }
+
+  input[type=text]::-webkit-input-placeholder {
+    color: $opsdroid-grey-medium;
+  }
+
+  input[type=submit] {
+    float: right;
+    width: 20%;
+  }
+}
+
+#connection-settings.active {
+  display: block;
+}

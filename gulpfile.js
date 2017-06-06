@@ -38,15 +38,15 @@ gulp.task('zip', shell.task([
 ]));
 
 gulp.task('sass', function () {
-  return gulp.src('./src/*.scss')
+  return gulp.src('./src/**/*.scss')
     .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./dist/css'));
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task("babel", function () {
   return gulp.src("./src/**/*.js")
     .pipe(babel())
-    .pipe(gulp.dest("./dist/js"));
+    .pipe(gulp.dest("./dist"));
 });
 
 gulp.task("compile", function() {

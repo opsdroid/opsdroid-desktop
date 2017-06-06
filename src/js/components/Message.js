@@ -13,7 +13,7 @@ export default class Message extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="message">
         <li className={this.props.user}>{this.props.text}</li>
         <li className="clearfix" />
         {this.props.user != "info" &&
