@@ -29,8 +29,13 @@ gulp.task('build-all', shell.task([
   'electron-packager . --overwrite --platform=all --arch=all --prune=true --out=release_builds'
 ]));
 
+
+gulp.task('build-linux', shell.task([
+  'electron-packager . --overwrite --platform=linux --icon=assets/icons/icon.png --arch=all --prune=true --out=release_builds'
+]));
+
 gulp.task('build-mac', shell.task([
-  'electron-packager . --overwrite --platform=darwin --icon=assets/icons/mac/icon.icns --arch=x64 --prune=true --out=release_builds'
+  'electron-packager . --overwrite --platform=darwin --icon=assets/icons/icon.icns --arch=x64 --prune=true --out=release_builds'
 ]));
 
 gulp.task('zip', shell.task([
