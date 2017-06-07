@@ -30,7 +30,7 @@ gulp.task('build-all', shell.task([
 ]));
 
 gulp.task('build-linux', shell.task([
-  'electron-packager . --overwrite --platform=linux --icon=assets/icons/icon.png --arch=all --prune=true --out=release_builds'
+  'electron-packager . --overwrite --platform=linux --icon=assets/icons/icon.xpm --arch=all --prune=true --out=release_builds'
 ]));
 
 gulp.task('build-mac', shell.task([
