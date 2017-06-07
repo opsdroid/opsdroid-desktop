@@ -14,7 +14,13 @@ export default class Message extends React.Component {
   render() {
     return (
       <div className="message">
-        <li className={this.props.user}>{this.props.text}</li>
+        { this.props.image &&
+          <li className={this.props.user + " image"}
+            style={{backgroundImage: 'url(' + this.props.image + ')',}}></li>
+        }
+        { this.props.text != this.props.image &&
+          <li className={this.props.user}>{this.props.text}</li>
+        }
         <li className="clearfix" />
         {this.props.user != "info" &&
         <div>

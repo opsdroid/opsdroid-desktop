@@ -11,7 +11,7 @@ import Message from './Message';
 
 export default class Conversation extends React.Component {
   generateKey(item) {
-    return md5(item["user"] + item["text"] + item["time"].toTimeString());
+    return md5(JSON.stringify(item));
   }
 
   render() {
@@ -19,7 +19,8 @@ export default class Conversation extends React.Component {
       <ul id="conversation">
           {this.props.items.map(item => (
             <Message text={item["text"]} user={item["user"]}
-                     time={item["time"]} key={this.generateKey(item)} />
+                     time={item["time"]} key={this.generateKey(item)}
+                     image={item["image"]} />
           ))}
       </ul>
     );

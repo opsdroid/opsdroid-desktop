@@ -9,7 +9,7 @@ import request from 'request';
 import settings from 'electron-settings';
 import WebSocket from 'websocket';
 
-import {formatPostUrl, formatSocketUrl} from './utils';
+import {formatPostUrl, formatSocketUrl, checkForUrl} from './utils';
 
 import Conversation from './components/Conversation';
 import Prompt from './components/Prompt';
@@ -124,13 +124,38 @@ class ChatClient extends React.Component {
 
   addMessage(message, sender) {
     // Add new message to the conversation
+    let newMessage = {
+      "text": message,
+      "user": sender,
+      "time": new Date()
+    }
     this.setState((prevState, props) => ({
-      conversation: prevState.conversation.concat([{
-        "text": message,
-        "user": sender,
-        "time": new Date()
-      }])
+      conversation: prevState.conversation.concat([newMessage])
     }));
+    this.expandMessage(newMessage);
+  }
+
+  expandMessage(message) {
+    let url = checkForUrl(message.text);
+    if (url) {
+      let req = {
+        method: 'GET', headers: new Headers(),
+        mode: 'cors', cache: 'default'};
+      fetch(new Request(url, req)).then((response) => {
+        return response.blob();
+      }).then((blob) => {
+        if (blob.type == "image/gif" ||
+            blob.type == "image/png" ||
+            blob.type == "image/jpg" ||
+            blob.type == "image/jpeg") {
+          this.setState((prevState, props) => {
+            let index = prevState.conversation.indexOf(message);
+            prevState.conversation[index].image = url;
+            return {"conversation": prevState.conversation};
+          });
+        }
+      })
+    }
   }
 
   updateStatusIndicator(status) {
