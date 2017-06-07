@@ -1,6 +1,6 @@
 {
   "name": "opsdroid-desktop",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A desktop application for Opsdroid",
   "main": "main.js",
   "scripts": {
