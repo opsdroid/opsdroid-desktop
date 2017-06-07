@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Opsdroid Desktop
+Type=Application
+Exec=/etc/opsdroid-desktop/opsdroid-desktop
+Terminal=false
+Icon=/etc/opsdroid-desktop/resources/app/assets/icons/icon.png
+Comment=A desktop client for opsdroid
+NoDisplay=false
+Categories=Development;chatbot
+Name[en]=Opsdroid Desktop
