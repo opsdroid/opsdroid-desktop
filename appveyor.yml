@@ -25,7 +25,7 @@ test_script:
   - npm --version
   - gulp compile
   - gulp build-windows
-  - gulp zip
+  - gulp zip-windows
 
 artifacts:
   - path: 'release_builds\opsdroid-desktop-win32-x64\**\*.zip'

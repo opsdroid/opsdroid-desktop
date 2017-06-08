@@ -41,12 +41,15 @@ gulp.task('build-windows', shell.task([
   'electron-packager . --overwrite --platform=win32 --icon=assets/icons/icon.png --arch=x64 --prune=true --out=release_builds'
 ]));
 
+gulp.task('zip-windows', shell.task([
+  `cd release_builds\opsdroid-desktop-win32-x64 && zip -FSr opsdroid-desktop-${package_info.version}-win32-x64.zip *`
+]));
+
 gulp.task('zip', shell.task([
   `if [ -d "release_builds/opsdroid-desktop-darwin-x64" ]; then cd release_builds/opsdroid-desktop-darwin-x64 && zip -FSr opsdroid-desktop-${package_info.version}-macos-x64.zip opsdroid-desktop.app; fi`,
   `if [ -d "release_builds/opsdroid-desktop-linux-x64" ]; then cd release_builds/opsdroid-desktop-linux-x64 && tar -cvzf opsdroid-desktop-${package_info.version}-linux-x64.tar.gz *; fi`,
   `if [ -d "release_builds/opsdroid-desktop-linux-ia32" ]; then cd release_builds/opsdroid-desktop-linux-ia32 && tar -cvzf opsdroid-desktop-${package_info.version}-linux-i386.tar.gz *; fi`,
-  `if [ -d "release_builds/opsdroid-desktop-linux-armv7l" ]; then cd release_builds/opsdroid-desktop-linux-armv7l && tar -cvzf opsdroid-desktop-${package_info.version}-linux-armv7l.tar.gz *; fi`,
-  `if [ -d "release_builds/opsdroid-desktop-win32-x64" ]; then cd release_builds/opsdroid-desktop-win32-x64 && zip -FSr opsdroid-desktop-${package_info.version}-win32-x64.zip *; fi`
+  `if [ -d "release_builds/opsdroid-desktop-linux-armv7l" ]; then cd release_builds/opsdroid-desktop-linux-armv7l && tar -cvzf opsdroid-desktop-${package_info.version}-linux-armv7l.tar.gz *; fi`
 ]));
 
 gulp.task('sass', function () {
