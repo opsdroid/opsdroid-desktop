@@ -1,0 +1,29 @@
+platform:
+- x64
+
+environment:
+  matrix:
+  - nodejs_version: "7"
+
+cache:
+  - '%APPDATA%\npm-cache'
+  - '%USERPROFILE%\.electron'
+
+branches:
+  only:
+  - master
+
+install:
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - npm install -g electron-packager gulp
+  - set PATH=%APPDATA%\npm;%PATH%
+  - npm install
+  - npm prune
+
+test_script:
+  - node --version
+  - npm --version
+  - gulp compile
+  - gulp build-windows
+
+build: off

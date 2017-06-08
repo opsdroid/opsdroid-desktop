@@ -37,6 +37,10 @@ gulp.task('build-mac', shell.task([
   'electron-packager . --overwrite --platform=darwin --icon=assets/icons/icon.icns --arch=x64 --prune=true --out=release_builds'
 ]));
 
+gulp.task('build-windows', shell.task([
+  'electron-packager . --overwrite --platform=win32 --icon=assets/icons/icon.png --arch=x64 --prune=true --out=release_builds'
+]));
+
 gulp.task('zip', shell.task([
   `if [ -d "release_builds/opsdroid-desktop-darwin-x64" ]; then cd release_builds/opsdroid-desktop-darwin-x64 && zip -FSr opsdroid-desktop-${package_info.version}-macos-x64.zip opsdroid-desktop.app; fi`,
   `if [ -d "release_builds/opsdroid-desktop-linux-x64" ]; then cd release_builds/opsdroid-desktop-linux-x64 && tar -cvzf opsdroid-desktop-${package_info.version}-linux-x64.tar.gz *; fi`,

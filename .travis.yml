@@ -26,11 +26,10 @@ install:
 
 script:
   - gulp compile
-  - gulp build-mac
-  - gulp build-linux
-
 
 before_deploy:
+  - gulp build-mac
+  - gulp build-linux
   - gulp zip
 
 deploy:
