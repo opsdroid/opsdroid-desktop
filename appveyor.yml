@@ -27,7 +27,7 @@ test_script:
   - gulp build-windows
 
 artifacts:
-  - path: 'release_builds\opsdroid-desktop-win32-x64\**\*.exe'
+  - path: 'release_builds\opsdroid-desktop-win32-x64\**\*.zip'
     name: opsdroid-desktop
 
 build: off
