@@ -25,10 +25,10 @@ test_script:
   - npm --version
   - gulp compile
   - gulp build-windows
-  - gulp zip-windows
+  - 7z opsdroid-desktop-win32-x64.zip %APPVEYOR_BUILD_FOLDER%\release_builds\opsdroid-desktop-win32-x64\*
 
 artifacts:
-  - path: 'release_builds\opsdroid-desktop-win32-x64\**\*.zip'
+  - path: opsdroid-desktop-win32-x64.zip
     name: opsdroid-desktop
 
 build: off
