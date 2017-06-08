@@ -42,7 +42,7 @@ gulp.task('build-windows', shell.task([
 ]));
 
 gulp.task('zip-windows', shell.task([
-  `zip -FSr release_builds\opsdroid-desktop-win32-x64\opsdroid-desktop-${package_info.version}-win32-x64.zip *`
+  `7z a release_builds\opsdroid-desktop-win32-x64\opsdroid-desktop-${package_info.version}-win32-x64.zip release_builds\opsdroid-desktop-win32-x64\*`
 ]));
 
 gulp.task('zip', shell.task([
