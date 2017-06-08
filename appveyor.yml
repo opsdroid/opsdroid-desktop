@@ -31,4 +31,17 @@ artifacts:
   - path: opsdroid-desktop-win32-x64.zip
     name: opsdroid-desktop
 
+deploy:
+  release: $(APPVEYOR_REPO_TAG_NAME)
+  description: $(APPVEYOR_REPO_TAG_NAME)
+  provider: GitHub
+  auth_token:
+    secure: EyT9xiX/1kQkUSY0nNUMIwNsm8yOibQYreUCXW0vnoGHUacv6ZBWFkXUQBxLckX6
+  artifact: /.*\.zip/
+  draft: false
+  prerelease: false
+  on:
+    branch: master
+    appveyor_repo_tag: true
+
 build: off
