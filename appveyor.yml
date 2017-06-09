@@ -25,14 +25,12 @@ test_script:
   - npm --version
   - gulp compile
   - gulp build-windows
-
-artifacts:
-  - path: 'opsdroid-desktop*-win32-x64.zip'
-    name: opsdroid-desktop
-
-before_deploy:
   - 7z a opsdroid-desktop-$(APPVEYOR_REPO_TAG_NAME)-win32-x64.zip %APPVEYOR_BUILD_FOLDER%\release_builds\opsdroid-desktop-win32-x64\*
 
+artifacts:
+  - path: /.*\.zip/
+    name: opsdroid-desktop
+    
 deploy:
   release: $(APPVEYOR_REPO_TAG_NAME)
   description: $(APPVEYOR_REPO_TAG_NAME)
