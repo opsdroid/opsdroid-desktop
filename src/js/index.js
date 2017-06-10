@@ -34,7 +34,6 @@ class ChatClient extends React.Component {
       showConnectionSettings: false,
       host: settings.get("host", DEFAULT_HOST),
       port: settings.get("port", DEFAULT_PORT),
-      updateAvailable: false,
     };
 
     this.active_connection = undefined;
@@ -56,7 +55,6 @@ class ChatClient extends React.Component {
     this.handleSocketError = this.handleSocketError.bind(this);
     this.handleSocketClose = this.handleSocketClose.bind(this);
     this.handleSocketMessage = this.handleSocketMessage.bind(this);
-    this.handleUpdateCheck = this.handleUpdateCheck.bind(this);
 
     this.client.on('connect', this.handleSocketConnect);
     this.client.on('connectFailed', this.handleSocketFailedToConnect);
@@ -65,9 +63,7 @@ class ChatClient extends React.Component {
   render() {
     return (
       <div>
-        {this.state.updateAvailable &&
-          <UpdateMessage latestVersion={this.state.updateAvailable} />
-        }
+        <UpdateMessage />
         <Conversation
           items={this.state.conversation} />
         <Prompt
@@ -88,12 +84,7 @@ class ChatClient extends React.Component {
   }
 
   componentDidMount() {
-    checkForUpdates(this.handleUpdateCheck);
     this.connectToWebsocket();
-  }
-
-  handleUpdateCheck(updatesAvailable) {
-    this.setState({updateAvailable: updatesAvailable})
   }
 
   handleSocketConnect(connection) {
