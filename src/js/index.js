@@ -9,7 +9,7 @@ import request from 'request';
 import settings from 'electron-settings';
 import WebSocket from 'websocket';
 
-import {formatPostUrl, formatSocketUrl, checkForUrl, checkForUpdates} from './utils';
+import {formatPostUrl, formatSocketUrl, checkForUrl} from './utils';
 
 import Conversation from './components/Conversation';
 import Prompt from './components/Prompt';
