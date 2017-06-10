@@ -1,6 +1,7 @@
 @import '../vars';
 
 ul#conversation {
+  margin: 8px;
   padding: 0;
   list-style-type: none;
   margin-bottom: $prompt-height;

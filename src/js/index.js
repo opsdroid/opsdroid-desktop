@@ -9,11 +9,12 @@ import request from 'request';
 import settings from 'electron-settings';
 import WebSocket from 'websocket';
 
-import {formatPostUrl, formatSocketUrl, checkForUrl} from './utils';
+import {formatPostUrl, formatSocketUrl, checkForUrl, checkForUpdates} from './utils';
 
 import Conversation from './components/Conversation';
 import Prompt from './components/Prompt';
 import ConnectionSettings from './components/ConnectionSettings';
+import UpdateMessage from './components/UpdateMessage';
 
 
 //////
@@ -33,6 +34,7 @@ class ChatClient extends React.Component {
       showConnectionSettings: false,
       host: settings.get("host", DEFAULT_HOST),
       port: settings.get("port", DEFAULT_PORT),
+      updateAvailable: false,
     };
 
     this.active_connection = undefined;
@@ -54,6 +56,7 @@ class ChatClient extends React.Component {
     this.handleSocketError = this.handleSocketError.bind(this);
     this.handleSocketClose = this.handleSocketClose.bind(this);
     this.handleSocketMessage = this.handleSocketMessage.bind(this);
+    this.handleUpdateCheck = this.handleUpdateCheck.bind(this);
 
     this.client.on('connect', this.handleSocketConnect);
     this.client.on('connectFailed', this.handleSocketFailedToConnect);
@@ -62,6 +65,9 @@ class ChatClient extends React.Component {
   render() {
     return (
       <div>
+        {this.state.updateAvailable &&
+          <UpdateMessage latestVersion={this.state.updateAvailable} />
+        }
         <Conversation
           items={this.state.conversation} />
         <Prompt
@@ -82,10 +88,15 @@ class ChatClient extends React.Component {
   }
 
   componentDidMount() {
+    checkForUpdates(this.handleUpdateCheck);
     this.connectToWebsocket();
   }
 
-  handleSocketConnect(connection){
+  handleUpdateCheck(updatesAvailable) {
+    this.setState({updateAvailable: updatesAvailable})
+  }
+
+  handleSocketConnect(connection) {
     console.log('WebSocket Client Connected');
     this.active_connection = connection;
     this.resetCooldown();
