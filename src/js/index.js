@@ -14,6 +14,7 @@ import {formatPostUrl, formatSocketUrl, checkForUrl} from './utils';
 import Conversation from './components/Conversation';
 import Prompt from './components/Prompt';
 import ConnectionSettings from './components/ConnectionSettings';
+import UpdateMessage from './components/UpdateMessage';
 
 
 //////
@@ -62,6 +63,7 @@ class ChatClient extends React.Component {
   render() {
     return (
       <div>
+        <UpdateMessage />
         <Conversation
           items={this.state.conversation} />
         <Prompt
@@ -85,7 +87,7 @@ class ChatClient extends React.Component {
     this.connectToWebsocket();
   }
 
-  handleSocketConnect(connection){
+  handleSocketConnect(connection) {
     console.log('WebSocket Client Connected');
     this.active_connection = connection;
     this.resetCooldown();
