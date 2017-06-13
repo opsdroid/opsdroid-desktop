@@ -1,11 +1,13 @@
 'use strict';
 
-export function formatPostUrl(host, port) {
-  return `http://${host}:${port}/connector/websocket`;
+export function formatPostUrl(host, port, ssl) {
+  let protocol = (ssl) ? "https" : "http"
+  return `${protocol}://${host}:${port}/connector/websocket`;
 }
 
-export function formatSocketUrl(host, port, socket) {
-  return `ws://${host}:${port}/connector/websocket/${socket}`;
+export function formatSocketUrl(host, port, ssl, socket) {
+  let protocol = (ssl) ? "wss" : "ws"
+  return `${protocol}://${host}:${port}/connector/websocket/${socket}`;
 }
 
 export function checkForUrl(text) {

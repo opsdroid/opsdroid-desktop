@@ -21,6 +21,7 @@ import UpdateMessage from './components/UpdateMessage';
 // Constants
 const DEFAULT_HOST = "localhost";
 const DEFAULT_PORT = "8080";
+const DEFAULT_SSL_PORT = "8443";
 
 
 //////
@@ -34,6 +35,7 @@ class ChatClient extends React.Component {
       showConnectionSettings: false,
       host: settings.get("host", DEFAULT_HOST),
       port: settings.get("port", DEFAULT_PORT),
+      sslEnabled: settings.get("sslEnabled", false),
     };
 
     this.active_connection = undefined;
@@ -47,6 +49,7 @@ class ChatClient extends React.Component {
     this.sendUserMessage = this.sendUserMessage.bind(this);
     this.updateHost = this.updateHost.bind(this);
     this.updatePort = this.updatePort.bind(this);
+    this.toggleSSL = this.toggleSSL.bind(this);
     this.connectToWebsocket = this.connectToWebsocket.bind(this);
     this.reconnectToWebSocketImmediately = this.reconnectToWebSocketImmediately.bind(this);
 
@@ -73,11 +76,13 @@ class ChatClient extends React.Component {
         <ConnectionSettings
           host={this.state.host}
           port={this.state.port}
+          sslEnabled={this.state.sslEnabled}
           defaultHost={DEFAULT_HOST}
           defaultPort={DEFAULT_PORT}
           visible={this.state.showConnectionSettings}
           updateHost={this.updateHost}
           updatePort={this.updatePort}
+          toggleSSL={this.toggleSSL}
           reconnectToWebSocketImmediately={this.reconnectToWebSocketImmediately} />
       </div>
     );
@@ -174,13 +179,13 @@ class ChatClient extends React.Component {
   }
 
   connectToWebsocket() {
-    request.post(formatPostUrl(this.state.host, this.state.port), (error, response, body) => {
+    request.post(formatPostUrl(this.state.host, this.state.port, this.state.sslEnabled), (error, response, body) => {
       if (error) {
         console.log(error);
         this.reconnectToWebSocket();
       } else {
         var socket = JSON.parse(body)["socket"];
-        this.client.connect(formatSocketUrl(this.state.host, this.state.port, socket));
+        this.client.connect(formatSocketUrl(this.state.host, this.state.port, this.state.sslEnabled, socket));
       }
     })
   }
@@ -235,14 +240,33 @@ class ChatClient extends React.Component {
   }
 
   updateHost(event) {
-    settings.set("host", event.target.value);
-    this.setState({host: settings.get("host", "localhost")});
+    if (event.target.value == '') {
+      settings.set("host", DEFAULT_HOST);
+      this.setState({host: DEFAULT_HOST});
+    } else {
+      settings.set("host", event.target.value);
+      this.setState({host: event.target.value});
+    }
     this.reconnectToWebSocketImmediately();
   }
 
   updatePort(event) {
-    settings.set("port", event.target.value);
-    this.setState({port: settings.get("port", "localhost")});
+    if (event.target.value == '') {
+      settings.set("port", DEFAULT_PORT);
+      this.setState({port: DEFAULT_PORT});
+    } else {
+      settings.set("port", event.target.value);
+      this.setState({port: event.target.value});
+    }
+    this.reconnectToWebSocketImmediately();
+  }
+
+  toggleSSL(event) {
+    this.setState((prevState, props) => {
+      settings.set("sslEnabled", !prevState.sslEnabled);
+      return {sslEnabled: !prevState.sslEnabled};
+    });
+
     this.reconnectToWebSocketImmediately();
   }
 }

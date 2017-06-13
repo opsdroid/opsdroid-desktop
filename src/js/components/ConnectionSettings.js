@@ -14,6 +14,11 @@ export default class ConnectionSettings extends React.Component {
   render() {
     return (
       <div id="connection-settings" className={this.props.visible ? "active" : "inactive"}>
+        <span
+          id="ssl-enabled"
+          onClick={this.props.toggleSSL}>
+          {this.props.sslEnabled ? ('https://') : ('http://')}
+        </span>
         <input type="text"
           id="host"
           placeholder={this.props.defaultHost}
