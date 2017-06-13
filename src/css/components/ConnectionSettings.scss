@@ -9,10 +9,21 @@
   background-color: $opsdroid-grey-medium;
   border-bottom: 1px solid $opsdroid-grey;
 
+  #ssl-enabled {
+    cursor: pointer;
+    line-height: $prompt-height;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: $opsdroid-grey-dark;
+    color: $opsdroid-grey-medium;
+    display: inline-block;
+    border-right: 2px solid $opsdroid-grey;
+  }
+
   input[type=text] {
     border-right: 2px solid $opsdroid-grey;
     background-color: $opsdroid-grey-dark;
-    width: 40%;
+    width: 33%;
   }
 
   input[type=text]::-webkit-input-placeholder {
