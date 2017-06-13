@@ -19,6 +19,7 @@ img.banner {
   bottom: 0px;
   left: -400px;
   filter: brightness(50%);
+  z-index: -1;
 }
 
 input[type=text] {
