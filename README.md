@@ -43,7 +43,3 @@ gulp serve
 ## Contributing
 
 Pull requests are welcome!
-
-## License
-
-GPLv3
