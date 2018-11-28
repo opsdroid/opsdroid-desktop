@@ -38,7 +38,7 @@ gulp.task('build-mac', shell.task([
 ]));
 
 gulp.task('build-windows', shell.task([
-  'electron-packager . --overwrite --platform=win32 --icon=assets/icons/icon.png --arch=x64 --prune=true --out=release_builds'
+  'electron-packager . --overwrite --platform=win32 --arch=x64 --prune=true --out=release_builds'
 ]));
 
 gulp.task('zip', shell.task([

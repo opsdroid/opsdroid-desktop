@@ -11,20 +11,21 @@
   "author": "Jacob Tomlinson",
   "license": "",
   "devDependencies": {
+    "@babel/core": "^7.1.6",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "electron": "~1.6.2",
+    "electron": "~3.0.10",
     "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-sass": "^3.1.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-sass": "^4.0.2",
     "gulp-shell": "^0.6.3"
   },
   "dependencies": {
     "electron-connect": "^0.6.1",
     "electron-settings": "^3.0.14",
     "md5": "^2.2.1",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
     "request": "^2.81.0",
     "websocket": "^1.0.24"
   }
