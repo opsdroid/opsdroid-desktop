@@ -6,7 +6,7 @@
 
 A cross-platform [electron](https://electron.atom.io/) & [react](https://facebook.github.io/react/) desktop app for chatting with [opsdroid](https://github.com/opsdroid/opsdroid).
 
-![Screenshot]https://raw.githubusercontent.com/KartSriv/opsdroid-desktop/master/assets/icons/PictureForReadme.png)
+![Screenshot](https://raw.githubusercontent.com/KartSriv/opsdroid-desktop/master/assets/icons/PictureForReadme.png)
 
 ## Installation
 
