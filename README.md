@@ -10,6 +10,7 @@ A cross-platform [electron](https://electron.atom.io/) & [react](https://faceboo
 
 ## Installation
 
+
 ### macOS
 
 - Download `opsdroid-desktop-{version}-macos-x64.zip` from the [latest release](https://github.com/opsdroid/opsdroid-desktop/releases/latest).
