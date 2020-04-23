@@ -17,7 +17,7 @@
     "electron": "~6.0.12",
     "gulp": "^3.9.1",
     "gulp-babel": "^8.0.0",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^4.1.0",
     "gulp-shell": "^0.7.0"
   },
   "dependencies": {
